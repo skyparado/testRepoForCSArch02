@@ -1,92 +1,904 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Flash — Full Capacity</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE FLASH — SSDs, NAND, and NVMe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0C10;
+    --surface: #12161C;
+    --surface-2: #171C24;
+    --trace: #232A35;
+    --trace-bright: #313B49;
+    --text: #E8EAED;
+    --muted: #8B95A1;
+    --dim: #5C6572;
+    --amber: #FFB020;
+    --amber-dim: #8A5E1C;
+    --cyan: #5EEAD4;
+    --cyan-dim: #1F5F56;
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    background-image:
+      linear-gradient(var(--trace) 1px, transparent 1px),
+      linear-gradient(90deg, var(--trace) 1px, transparent 1px);
+    background-size: 42px 42px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a{ color: var(--cyan); text-decoration: none; }
+  a:hover{ text-decoration: underline; }
+  ::selection{ background: var(--amber-dim); color: var(--text); }
+
+  :focus-visible{
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+
+  h2{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0 0 1.1rem 0;
+  }
+  p{ color: #C7CDD5; margin: 0 0 1.1rem 0; font-size: 1.02rem; }
+  strong{ color: var(--text); font-weight: 600; }
+  ul{ margin: 0 0 1.2rem 0; padding-left: 0; list-style: none; }
+  li{ color: #C7CDD5; margin-bottom: 0.6rem; padding-left: 1.4rem; position: relative; }
+  li::before{
+    content:"";
+    position:absolute; left:0; top:0.55em;
+    width:6px; height:6px;
+    background: var(--amber);
+    transform: rotate(45deg);
+  }
+
+  /* ---------- layout shell ---------- */
+  .shell{
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 260px minmax(0,1fr);
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px){
+    .shell{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    padding: 2.4rem 1.6rem 2rem 2rem;
+    border-right: 1px solid var(--trace);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  @media (max-width: 900px){
+    .sidebar{ position: relative; height: auto; border-right:none; border-bottom:1px solid var(--trace); padding: 1.6rem; }
+  }
+  .sb-brand{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 2.2rem;
+  }
+  .sb-brand span{ color: var(--amber); }
+  .toc-label{
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 0.9rem;
+  }
+  .toc{ list-style:none; margin:0; padding:0; }
+  .toc li{ margin:0; padding:0; }
+  .toc li::before{ display:none; }
+  .toc a{
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.83rem;
+    color: var(--muted);
+    padding: 0.42rem 0 0.42rem 0.9rem;
+    border-left: 2px solid var(--trace);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .toc a:hover{ color: var(--text); text-decoration:none; border-color: var(--trace-bright); }
+  .toc a.active{ color: var(--amber); border-color: var(--amber); }
+  .sb-meta{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--dim);
+    line-height: 1.9;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--trace);
+  }
+  .sb-meta b{ color: var(--muted); font-weight: 500; }
+
+  /* ---------- main ---------- */
+  main{ padding: 0 0 6rem 0; position:relative; z-index:1; }
+
+  .hero{
+    padding: 5rem 3.2rem 3.5rem 3.2rem;
+    border-bottom: 1px solid var(--trace);
+    position: relative;
+    overflow: hidden;
+  }
+  @media (max-width: 900px){ .hero{ padding: 3rem 1.6rem; } }
+  .hero-eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 1rem;
+    display:flex; align-items:center; gap:0.6rem;
+  }
+  .hero-eyebrow .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px 1px var(--amber);
+    animation: blink 1.8s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  .hero h1{
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem 0;
+    color: var(--text);
+  }
+  .hero .sub{
+    font-family: var(--font-mono);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    color: var(--cyan);
+    margin-bottom: 2.2rem;
+  }
+  .hero-viz{
+    display:flex; align-items:center; gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .hero-cell{
+    width: 14px; height: 22px;
+    background: var(--surface-2);
+    border: 1px solid var(--trace-bright);
+    position: relative;
+  }
+  .hero-cell.charged{ background: var(--amber-dim); border-color: var(--amber); }
+  .hero-cell.charged::after{
+    content:"";
+    position:absolute; inset:3px;
+    background: var(--amber);
+    box-shadow: 0 0 6px 1px var(--amber);
+  }
+
+  section{
+    padding: 3.4rem 3.2rem;
+    border-bottom: 1px solid var(--trace);
+    max-width: 760px;
+  }
+  @media (max-width: 900px){ section{ padding: 2.4rem 1.6rem; max-width:none; } }
+  section:last-of-type{ border-bottom:none; }
+
+  .section-index{
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+  }
+
+  /* ---------- NAND layer diagram ---------- */
+  .layer-diagram{
+    margin: 1.8rem 0 2rem 0;
+    border: 1px solid var(--trace);
+    background: var(--surface);
+    padding: 1.6rem;
+  }
+  .layer-row{
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 0;
+  }
+  .layer-row + .layer-row{ border-top: 1px dashed var(--trace); }
+  .layer-name{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .layer-name b{ color: var(--text); display:block; font-size:0.86rem; margin-bottom:2px; }
+  .layer-bar-track{ height: 20px; background: var(--surface-2); position:relative; overflow:hidden; }
+  .layer-bar-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  }
+
+  /* ---------- lists as spec chips ---------- */
+  .chip-list{ display:flex; flex-direction:column; gap:0.6rem; margin: 1.4rem 0; }
+  .chip{
+    display:grid; grid-template-columns: 110px 1fr;
+    gap: 1rem; align-items:baseline;
+    border: 1px solid var(--trace);
+    background: var(--surface);
+    padding: 0.75rem 1rem;
+  }
+  .chip .tag{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--amber);
+  }
+  .chip .desc{ color: #C7CDD5; font-size: 0.92rem; }
+
+  /* ---------- table ---------- */
+  .table-wrap{ overflow-x:auto; margin: 1.6rem 0; border: 1px solid var(--trace); }
+  table.compare-table{
+    border-collapse: collapse;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    min-width: 640px;
+  }
+  table.compare-table th{
+    text-align:left;
+    background: var(--surface-2);
+    color: var(--dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.68rem;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--trace-bright);
+  }
+  table.compare-table td{
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid var(--trace);
+    color: #C7CDD5;
+  }
+  table.compare-table tr:last-child td{ border-bottom:none; }
+  table.compare-table td:first-child{ color: var(--text); font-weight: 600; }
+  table.compare-table tr:hover td{ background: rgba(94,234,212,0.04); }
+
+  /* ---------- simulator ---------- */
+  .sim{
+    border: 1px solid var(--trace);
+    background: var(--surface);
+    padding: 1.6rem;
+    margin-top: 1.6rem;
+  }
+  .sim-controls{
+    display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+    margin-bottom: 1.4rem;
+  }
+  .sim-btn{
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--bg);
+    background: var(--amber);
+    border: none;
+    padding: 0.7rem 1.3rem;
+    cursor: pointer;
+    transition: filter .15s ease, transform .1s ease;
+  }
+  .sim-btn:hover{ filter: brightness(1.1); }
+  .sim-btn:active{ transform: translateY(1px); }
+  .sim-btn:disabled{ background: var(--trace-bright); color: var(--dim); cursor: not-allowed; }
+  .sim-note{ font-family: var(--font-mono); font-size: 0.74rem; color: var(--dim); }
+
+  .sim-panels{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+  }
+  @media (max-width: 640px){ .sim-panels{ grid-template-columns: 1fr; } }
+
+  .sim-panel{
+    border: 1px solid var(--trace);
+    background: var(--bg);
+    padding: 1.1rem;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .sim-panel h3{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1rem 0;
+    align-self:flex-start;
+  }
+  .sim-panel canvas{ width: 100%; max-width: 230px; height: auto; }
+
+  .sim-stats{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1rem;
+    width:100%;
+    display:flex; justify-content:space-between;
+    border-top: 1px dashed var(--trace);
+    padding-top: 0.7rem;
+  }
+  .sim-stats b{ color: var(--cyan); font-size: 0.92rem; display:block; }
+  .sim-panel:first-child .sim-stats b{ color: var(--amber); }
+
+  .sim-log{
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--dim);
+    text-align:center;
+    margin-top: 1.4rem;
+    min-height: 1.2em;
+  }
+
+  /* ---------- references ---------- */
+  .refs{ list-style:none; margin:0; padding:0; }
+  .refs li{
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--trace);
+    padding-left: 0;
+  }
+  .refs li::before{ display:none; }
+  .refs li em{ color: var(--muted); font-style: italic; }
+  .refs li:last-child{ border-bottom: none; }
+
+  footer{
+    padding: 2.4rem 3.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--dim);
+    display:flex; justify-content: space-between; flex-wrap:wrap; gap:0.5rem;
+  }
+  @media (max-width:900px){ footer{ padding: 1.6rem; } }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    html{ scroll-behavior: auto; }
+  }
+</style>
 </head>
 <body>
 
-  <nav class="navbar">
-    <div class="nav-logo">FULL CAPACITY</div>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="index.html#exhibits">Explore</a></li>
-      <li><a href="about.html">About Us</a></li>
-    </ul>
-    <a href="index.html" class="btn btn-outline">Back to Main</a>
-  </nav>
+<div class="shell">
 
-  <div class="exhibit-page-wrap">
-
-    <aside class="toc-sidebar">
-      <h2 class="toc-heading">Table of Contents</h2>
-      <ul class="toc-list">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="sb-brand">EXHIBIT&nbsp;&nbsp;<span>04</span>&nbsp;/&nbsp;STORAGE MEDIA</div>
+      <div class="toc-label">Contents</div>
+      <ul class="toc" id="toc">
         <li><a href="#intro">Introduction</a></li>
         <li><a href="#nand">NAND Flash Architecture</a></li>
+        <li><a href="#lifespan">Wear Leveling &amp; Lifespan</a></li>
         <li><a href="#interfaces">SATA vs. NVMe</a></li>
+        <li><a href="#performance">Speed, Latency &amp; IOPS</a></li>
         <li><a href="#simulator">Interactive Simulator</a></li>
         <li><a href="#references">References</a></li>
       </ul>
-    </aside>
+    </div>
+    <div class="sb-meta">
+      <div><b>Author</b><br>Galicia, Lance Krystofer</div>
+      <div style="margin-top:0.6rem;"><b>Reading time</b><br>~15 minute read</div>
+    </div>
+  </aside>
 
-    <main class="exhibit-main">
-      <div class="exhibit-header-bar">
-        <a href="index.html" class="back-link">&larr; Back to Exhibits</a>
-        <h1 class="exhibit-page-title">THE FLASH:</h1>
-        <p class="exhibit-page-sub">SSDs, NAND, and NVMe</p>
-        <span class="exhibit-meta">by Surname, Firstname &middot; 15 minute read</span>
+  <!-- MAIN -->
+  <main>
+
+    <div class="hero">
+      <div class="hero-eyebrow"><span class="dot"></span> NO MOVING PARTS</div>
+      <h1>THE FLASH</h1>
+      <div class="sub">SSDs, NAND, and NVMe — full capacity, no motor</div>
+      <div class="hero-viz" id="heroViz"></div>
+    </div>
+
+    <section id="intro">
+      <div class="section-index">01 — Introduction</div>
+      <h2>Introduction</h2>
+      <p>
+        Every storage medium before this one had a motor. Punch cards were fed through
+        rollers, drums spun, platters rotated, discs whirled under a laser. In 1991,
+        SanDisk shipped the first commercial <strong>solid-state drive</strong> — a
+        20 MB unit with no motor at all. Data was trapped as electrical charge inside
+        silicon, and for the first time, "seeking" a piece of data meant nothing: every
+        cell was equally close.
+      </p>
+      <p>
+        It took almost two decades for flash to become cheap enough to replace the hard
+        drive in everyday computers. But once <strong>NAND flash</strong> caught up in
+        price, it changed the shape of the memory hierarchy — closing the long-standing
+        gap between fast, volatile RAM and slow, mechanical secondary storage.
+      </p>
+    </section>
+
+    <section id="nand">
+      <div class="section-index">02 — Architecture</div>
+      <h2>NAND Flash Memory Architecture</h2>
+      <p>
+        A NAND flash chip stores data in <strong>floating-gate transistors</strong> — a
+        normal transistor with a second, electrically isolated gate buried inside it.
+        Trapping electrons on that floating gate raises the cell's threshold voltage;
+        removing them lowers it. Because the gate is insulated, the charge stays put
+        with no power applied — this is what makes flash <strong>non-volatile</strong>.
+      </p>
+
+      <div class="layer-diagram">
+        <div class="layer-row">
+          <div class="layer-name"><b>Package</b>multiple dies</div>
+          <div class="layer-bar-track"><div class="layer-bar-fill" style="width:100%"></div></div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-name"><b>Die → Plane</b>parallel execution units</div>
+          <div class="layer-bar-track"><div class="layer-bar-fill" style="width:80%"></div></div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-name"><b>Block</b>erase unit, ~128–256 pages</div>
+          <div class="layer-bar-track"><div class="layer-bar-fill" style="width:58%"></div></div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-name"><b>Page</b>write unit, 4–16 KB</div>
+          <div class="layer-bar-track"><div class="layer-bar-fill" style="width:34%"></div></div>
+        </div>
+        <div class="layer-row">
+          <div class="layer-name"><b>Cell</b>floating-gate transistor</div>
+          <div class="layer-bar-track"><div class="layer-bar-fill" style="width:12%"></div></div>
+        </div>
       </div>
 
-      <article class="article-body">
+      <p>
+        Cells are organized into <strong>pages</strong> (the smallest unit that can be
+        written) and pages are grouped into <strong>blocks</strong> (the smallest unit
+        that can be erased). A cell can only hold one voltage state at a time, so more
+        bits per cell means finer voltage steps and a noisier read:
+      </p>
 
-        <section id="intro">
-          <h2>Introduction</h2>
-          <p>
-            This section explores the transition from mechanical storage devices to flash-based
-            storage technologies. It examines how Solid-State Drives (SSDs) use NAND flash
-            memory to store data electronically without moving parts, significantly improving
-            speed, reliability, and power efficiency. It also covers NVMe — a PCIe-based
-            protocol enabling the high-performance storage used in modern computers and servers.
-          </p>
-        </section>
+      <div class="chip-list">
+        <div class="chip"><span class="tag">SLC</span><span class="desc">1 bit/cell, 2 voltage states — fastest and most durable.</span></div>
+        <div class="chip"><span class="tag">MLC</span><span class="desc">2 bits/cell, 4 voltage states.</span></div>
+        <div class="chip"><span class="tag">TLC</span><span class="desc">3 bits/cell, 8 voltage states — the mainstream consumer standard.</span></div>
+        <div class="chip"><span class="tag">QLC</span><span class="desc">4 bits/cell, 16 voltage states — cheapest per gigabyte, shortest lifespan.</span></div>
+      </div>
 
-        <section id="nand">
-          <h2>NAND Flash Memory Architecture</h2>
-          <p><em>[ Content goes here ]</em></p>
-        </section>
+      <p>
+        NAND has one quirk that shapes everything above it: it can write to an empty
+        page, but it <strong>cannot overwrite</strong> a page directly — the whole block
+        must be erased first. An SSD controller works around this by writing updates to
+        a fresh page elsewhere and marking the old one invalid, then later copying the
+        still-valid pages out of a block and erasing it wholesale. This background
+        process is called <strong>garbage collection</strong>.
+      </p>
+    </section>
 
-        <section id="interfaces">
-          <h2>SATA vs. NVMe Interfaces</h2>
-          <p><em>[ Content goes here ]</em></p>
-        </section>
+    <section id="lifespan">
+      <div class="section-index">03 — Endurance</div>
+      <h2>Wear Leveling and Flash Lifespan</h2>
+      <p>
+        Each erase cycle stresses the oxide layer around the floating gate a little
+        more. Eventually a cell can no longer reliably hold a charge, so every NAND
+        cell has a finite budget of <strong>program/erase (P/E) cycles</strong> —
+        roughly 100,000 for SLC, down to a few hundred for QLC.
+      </p>
+      <p>
+        If a drive always rewrote the same "hot" blocks — a swap file, a database log —
+        those blocks would wear out in weeks while the rest of the chip sat untouched.
+        <strong> Wear leveling</strong> algorithms prevent this by spreading writes
+        evenly across the whole chip:
+      </p>
+      <ul>
+        <li><strong>Dynamic wear leveling</strong> — new writes are steered toward the least-worn free blocks.</li>
+        <li><strong>Static wear leveling</strong> — even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
+      </ul>
+      <p>
+        Drives also reserve a slice of raw capacity that the user never sees, called
+        <strong> over-provisioning</strong>, to give the controller room to juggle
+        garbage collection and wear leveling without running out of free blocks. The
+        <strong> TRIM</strong> command lets the operating system tell the drive which
+        pages are no longer in use, so the controller can erase them ahead of time
+        instead of scrambling during a write.
+      </p>
+    </section>
 
-        <section id="simulator">
-          <h2>Interactive: SSD Speed Challenge</h2>
-          <div class="simulator-placeholder">
-            [ SSD Speed Challenge Component ]
+    <section id="interfaces">
+      <div class="section-index">04 — Interfaces</div>
+      <h2>SATA vs. NVMe Interfaces</h2>
+      <p>
+        An SSD is only as fast as the road connecting it to the CPU. Early SSDs were
+        built into the 2.5" form factor and spoke <strong>SATA</strong> — a protocol
+        and connector designed in 2003 for spinning platters. SATA III tops out around
+        6 Gbps (about 550 MB/s after overhead), and its command layer, <strong>AHCI</strong>,
+        supports exactly one command queue, 32 commands deep — plenty for a mechanical
+        drive that could barely keep that queue full, but a hard ceiling for flash.
+      </p>
+      <p>
+        <strong>NVMe</strong> (Non-Volatile Memory Express) throws out that legacy path
+        entirely. It talks straight to the CPU over <strong>PCIe lanes</strong> instead
+        of a storage-specific bus, and its command set was designed from scratch around
+        what flash can actually do: up to <strong>65,535 queues</strong>, each up to
+        <strong> 65,536 commands</strong> deep, so a modern multi-core CPU can issue
+        requests to the drive in parallel instead of standing in one line.
+      </p>
+
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Interface</th>
+              <th>Bus</th>
+              <th>Protocol</th>
+              <th>Queues × Depth</th>
+              <th>Form factor</th>
+              <th>Throughput</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SATA III SSD</td>
+              <td>SATA</td>
+              <td>AHCI</td>
+              <td>1 × 32</td>
+              <td>2.5″</td>
+              <td>~550 MB/s</td>
+            </tr>
+            <tr>
+              <td>NVMe (PCIe 3.0 x4)</td>
+              <td>PCIe</td>
+              <td>NVMe</td>
+              <td>65,535 × 65,536</td>
+              <td>M.2 / U.2</td>
+              <td>~3,500 MB/s</td>
+            </tr>
+            <tr>
+              <td>NVMe (PCIe 4.0 x4)</td>
+              <td>PCIe</td>
+              <td>NVMe</td>
+              <td>65,535 × 65,536</td>
+              <td>M.2 / U.2</td>
+              <td>~7,000 MB/s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The gap isn't just bandwidth — it's overhead. Every AHCI command travels
+        through a driver stack built for disks that took milliseconds to respond. NVMe
+        strips that stack down to the operations flash actually needs, cutting CPU
+        cycles spent per command and letting drives fully exploit PCIe's lanes as
+        generations move from PCIe 3.0 to 4.0 and beyond.
+      </p>
+    </section>
+
+    <section id="performance">
+      <div class="section-index">05 — Benchmarks</div>
+      <h2>Storage Performance: Latency and IOPS</h2>
+      <p>
+        Two numbers describe how "fast" a drive really feels in everyday use, and
+        neither of them is the big MB/s figure on the box.
+      </p>
+      <ul>
+        <li>
+          <strong>Latency</strong> — the delay before a single request starts
+          returning data. An HDD pays for a physical seek and rotational delay, often
+          several milliseconds. Flash has no moving parts to wait for, so NVMe latency
+          is typically measured in <strong>microseconds</strong>.
+        </li>
+        <li>
+          <strong>IOPS</strong> (Input/Output Operations Per Second) — how many
+          individual read or write operations a drive can complete per second,
+          especially with small, random requests. This is the metric that matters for
+          databases, virtual machines, and boot times, where the workload is thousands
+          of tiny scattered requests rather than one long stream.
+        </li>
+      </ul>
+      <p>
+        A 7,200 RPM HDD manages roughly 100–200 random IOPS, limited by how fast its
+        arm can physically move. A SATA SSD reaches tens of thousands. An NVMe drive,
+        freed from AHCI's single queue, can push past a million — not because flash
+        reads any single cell faster than that, but because thousands of requests can
+        be in flight across its parallel queues at once.
+      </p>
+    </section>
+
+    <section id="simulator">
+      <div class="section-index">06 — Try It</div>
+      <h2>Interactive: SSD Speed Challenge</h2>
+      <p>
+        Fire off a queue of random read requests and watch how each drive handles
+        them. The HDD's arm has to physically seek to each address in turn; the SSD
+        answers every request at once, straight from the NAND grid.
+      </p>
+
+      <div class="sim">
+        <div class="sim-controls">
+          <button class="sim-btn" id="fireBtn">Fire 16 random reads</button>
+          <span class="sim-note" id="simNote">Times are illustrative, scaled for visibility — not real device benchmarks.</span>
+        </div>
+        <div class="sim-panels">
+          <div class="sim-panel">
+            <h3>HDD — 7,200 RPM</h3>
+            <canvas id="hddCanvas" width="220" height="220"></canvas>
+            <div class="sim-stats">
+              <div>Elapsed<b id="hddTime">0 ms</b></div>
+              <div>Est. IOPS<b id="hddIops">—</b></div>
+            </div>
           </div>
-        </section>
+          <div class="sim-panel">
+            <h3>NVMe SSD</h3>
+            <canvas id="ssdCanvas" width="220" height="220"></canvas>
+            <div class="sim-stats">
+              <div>Elapsed<b id="ssdTime">0 ms</b></div>
+              <div>Est. IOPS<b id="ssdIops">—</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="sim-log" id="simLog">Press the button to send 16 random read requests to both drives.</div>
+      </div>
+    </section>
 
-        <section id="references">
-          <h2>References</h2>
-          <p><em>[ References go here ]</em></p>
-        </section>
+    <section id="references">
+      <div class="section-index">07 — Sources</div>
+      <h2>References</h2>
+      <ul class="refs">
+        <li>Micheloni, R., Marelli, A., &amp; Eshghi, K. (2013). <em>Inside Solid State Drives (SSDs).</em> Springer.</li>
+        <li>NVM Express, Inc. (2021). <em>NVM Express Base Specification, Revision 1.4c.</em></li>
+        <li>Cai, Y., Haratsch, E. F., Mutlu, O., &amp; Mai, K. (2012). Error Patterns in MLC NAND Flash Memory. <em>Design, Automation &amp; Test in Europe (DATE).</em></li>
+        <li>Serial ATA International Organization. (2013). <em>Serial ATA Revision 3.2 Specification.</em></li>
+        <li>SanDisk Corporation. (1991). <em>First Commercial Solid-State Drive Announcement.</em> Company archives.</li>
+      </ul>
+    </section>
 
-      </article>
-    </main>
+    <footer>
+      <span>THE FLASH — Exhibit 04</span>
+      <span>Museum of Storage Media</span>
+    </footer>
 
-    <div></div>
+  </main>
+</div>
 
-  </div>
+<script>
+// ---------- hero cell strip ----------
+(function(){
+  const viz = document.getElementById('heroViz');
+  const N = 26;
+  let cells = [];
+  for(let i=0;i<N;i++){
+    const c = document.createElement('div');
+    c.className = 'hero-cell';
+    viz.appendChild(c);
+    cells.push(c);
+  }
+  function randomize(){
+    cells.forEach(c=>{
+      c.classList.toggle('charged', Math.random() > 0.6);
+    });
+  }
+  randomize();
+  setInterval(randomize, 2200);
+})();
 
-  <footer class="footer">
-    FULL CAPACITY &mdash; The Evolution of Computer Data Storage &mdash; CSARCH2 Group 7 [S01]
-  </footer>
+// ---------- TOC scroll spy ----------
+(function(){
+  const links = Array.from(document.querySelectorAll('#toc a'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 140;
+    sections.forEach((s,i)=>{ if(s && s.offsetTop <= y) idx = i; });
+    links.forEach(l=>l.classList.remove('active'));
+    if(links[idx]) links[idx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+})();
 
-  <script src="js/main.js"></script>
+// ---------- SSD Speed Challenge simulator ----------
+(function(){
+  const hddCanvas = document.getElementById('hddCanvas');
+  const ssdCanvas = document.getElementById('ssdCanvas');
+  const hddCtx = hddCanvas.getContext('2d');
+  const ssdCtx = ssdCanvas.getContext('2d');
+  const fireBtn = document.getElementById('fireBtn');
+  const simLog = document.getElementById('simLog');
+  const hddTimeEl = document.getElementById('hddTime');
+  const ssdTimeEl = document.getElementById('ssdTime');
+  const hddIopsEl = document.getElementById('hddIops');
+  const ssdIopsEl = document.getElementById('ssdIops');
+
+  const REQ_COUNT = 16;
+  const GRID = 4; // 4x4 = 16 cells for SSD
+
+  let hddAngle = 0;
+  let hddTargetAngle = 0;
+  let hddActiveSector = -1;
+  let ssdActiveCells = new Set();
+
+  function drawHDD(){
+    const ctx = hddCtx, w = hddCanvas.width, h = hddCanvas.height, cx = w/2, cy = h/2, r = 95;
+    ctx.clearRect(0,0,w,h);
+    // platter
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = '#171C24';
+    ctx.fill();
+    ctx.strokeStyle = '#313B49';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // sectors
+    const sectors = 16;
+    for(let i=0;i<sectors;i++){
+      const a0 = (i/sectors) * Math.PI*2;
+      const a1 = ((i+1)/sectors) * Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = (i === hddActiveSector) ? '#FFB020' : 'rgba(255,255,255,0.02)';
+      ctx.fill();
+      ctx.strokeStyle = '#232A35';
+      ctx.stroke();
+    }
+    // hub
+    ctx.beginPath();
+    ctx.arc(cx,cy,10,0,Math.PI*2);
+    ctx.fillStyle = '#0A0C10';
+    ctx.strokeStyle = '#5C6572';
+    ctx.stroke();
+    // arm
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(hddAngle);
+    ctx.strokeStyle = '#8B95A1';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(r+8, 0);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(r+8,0,4,0,Math.PI*2);
+    ctx.fillStyle = '#FFB020';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawSSD(){
+    const ctx = ssdCtx, w = ssdCanvas.width, h = ssdCanvas.height;
+    ctx.clearRect(0,0,w,h);
+    const pad = 24;
+    const size = (w - pad*2) / GRID;
+    for(let row=0; row<GRID; row++){
+      for(let col=0; col<GRID; col++){
+        const idx = row*GRID+col;
+        const x = pad + col*size;
+        const y = pad + row*size;
+        const active = ssdActiveCells.has(idx);
+        ctx.fillStyle = active ? '#5EEAD4' : '#171C24';
+        ctx.fillRect(x+3, y+3, size-6, size-6);
+        ctx.strokeStyle = active ? '#5EEAD4' : '#232A35';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x+3, y+3, size-6, size-6);
+        if(active){
+          ctx.shadowColor = '#5EEAD4';
+          ctx.shadowBlur = 8;
+          ctx.strokeRect(x+3, y+3, size-6, size-6);
+          ctx.shadowBlur = 0;
+        }
+      }
+    }
+  }
+
+  drawHDD();
+  drawSSD();
+
+  function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+  async function runHDD(){
+    const start = performance.now();
+    for(let i=0;i<REQ_COUNT;i++){
+      const sector = Math.floor(Math.random()*16);
+      hddTargetAngle = (sector/16) * Math.PI*2;
+      hddActiveSector = sector;
+      // simulate seek: animate arm toward target over ~90ms (scaled)
+      const seekMs = 60 + Math.random()*60;
+      const t0 = performance.now();
+      const fromAngle = hddAngle;
+      let diff = hddTargetAngle - fromAngle;
+      while(diff > Math.PI) diff -= Math.PI*2;
+      while(diff < -Math.PI) diff += Math.PI*2;
+      while(performance.now() - t0 < seekMs){
+        const p = (performance.now()-t0)/seekMs;
+        hddAngle = fromAngle + diff*Math.min(p,1);
+        drawHDD();
+        await sleep(8);
+      }
+      hddAngle = hddTargetAngle;
+      drawHDD();
+      await sleep(15); // rotational settle
+      hddTimeEl.textContent = Math.round(performance.now()-start) + ' ms';
+    }
+    hddActiveSector = -1;
+    drawHDD();
+    const total = performance.now()-start;
+    hddTimeEl.textContent = Math.round(total) + ' ms';
+    hddIopsEl.textContent = Math.round(REQ_COUNT/(total/1000)) + ' IOPS';
+    return total;
+  }
+
+  async function runSSD(){
+    const start = performance.now();
+    // SSD answers in parallel batches (simulating multiple queues in flight)
+    const batchSize = 8;
+    for(let i=0;i<REQ_COUNT;i+=batchSize){
+      ssdActiveCells = new Set();
+      const batch = Math.min(batchSize, REQ_COUNT-i);
+      for(let j=0;j<batch;j++){
+        ssdActiveCells.add(Math.floor(Math.random()*GRID*GRID));
+      }
+      drawSSD();
+      await sleep(45); // near-instant parallel response, scaled for visibility
+      ssdTimeEl.textContent = Math.round(performance.now()-start) + ' ms';
+    }
+    ssdActiveCells = new Set();
+    drawSSD();
+    const total = performance.now()-start;
+    ssdTimeEl.textContent = Math.round(total) + ' ms';
+    ssdIopsEl.textContent = Math.round(REQ_COUNT/(total/1000)) + ' IOPS';
+    return total;
+  }
+
+  fireBtn.addEventListener('click', async ()=>{
+    fireBtn.disabled = true;
+    simLog.textContent = 'Sending ' + REQ_COUNT + ' random read requests to both drives…';
+    hddTimeEl.textContent = '0 ms'; ssdTimeEl.textContent = '0 ms';
+    hddIopsEl.textContent = '—'; ssdIopsEl.textContent = '—';
+
+    const [hddTotal, ssdTotal] = await Promise.all([runHDD(), runSSD()]);
+    const factor = (hddTotal/ssdTotal).toFixed(1);
+    simLog.textContent = 'Done — the NVMe SSD finished the same ' + REQ_COUNT + ' requests roughly ' + factor + '× faster than the HDD, because it answered them in parallel instead of one seek at a time.';
+    fireBtn.disabled = false;
+  });
+})();
+</script>
+
 </body>
 </html>
