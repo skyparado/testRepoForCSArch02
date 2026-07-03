@@ -1,0 +1,19 @@
+---
+layout: '../layouts/SiteLayout.astro'
+title: "Full Capacity: The Evolution of Computer Data Storage"
+isHome: true
+---
+
+import Hero from '../components/Hero.astro';
+import StatsBar from '../components/StatsBar.astro';
+import Carousel from '../components/Carousel.jsx';
+import Timeline from '../components/Timeline.astro';
+import ExhibitList from '../components/ExhibitList.astro';
+
+export const baseUrl = import.meta.env.BASE_URL;
+
+<Hero />
+<StatsBar />
+<Carousel client:load baseUrl={baseUrl} />
+<Timeline />
+<ExhibitList />
