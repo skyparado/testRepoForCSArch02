@@ -1,0 +1,46 @@
+---
+const { isHome = false } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+const currentPath = Astro.url.pathname;
+
+const homeHref = baseUrl;
+const exploreHref = isHome ? '#exhibits' : `${baseUrl}#exhibits`;
+const aboutHref = `${baseUrl}about`;
+
+const isAboutActive = currentPath.replace(/\/$/, '') === aboutHref.replace(/\/$/, '');
+---
+
+<nav class="navbar">
+  <div class="nav-logo">FULL CAPACITY</div>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href={homeHref} class={isHome ? 'active' : ''}>Home</a></li>
+    <li><a href={exploreHref}>Explore</a></li>
+    <li><a href={aboutHref} class={isAboutActive ? 'active' : ''}>About Us</a></li>
+  </ul>
+  {isHome
+    ? <a href={aboutHref} class="btn btn-outline nav-cta">About Us</a>
+    : <a href={homeHref} class="btn btn-outline nav-cta">Back to Main</a>
+  }
+</nav>
+
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+    navLinks.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>

@@ -1,0 +1,17 @@
+---
+const stats = [
+  { num: '1928', label: 'First punch card patent filed' },
+  { num: '5 MB', label: 'IBM 350 capacity (1956)' },
+  { num: '100 TB', label: 'Modern SSD maximum' },
+  { num: '10⁶×', label: 'Density growth since 1956' },
+];
+---
+
+<div class="stats-bar">
+  {stats.map((s) => (
+    <div class="stat">
+      <span class="stat-num" set:html={s.num} />
+      <span class="stat-label">{s.label}</span>
+    </div>
+  ))}
+</div>

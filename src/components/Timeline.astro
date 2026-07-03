@@ -1,0 +1,29 @@
+---
+const events = [
+  { year: '1890', text: 'Hollerith punch cards for US Census' },
+  { year: '1932', text: 'Magnetic drum memory invented' },
+  { year: '1956', text: 'IBM 350 — first commercial HDD (5 MB)' },
+  { year: '1967', text: 'IBM 8-inch floppy disk introduced' },
+  { year: '1980', text: 'Seagate ST-506 — first 5.25" HDD' },
+  { year: '1982', text: 'Sony/Philips launch the Compact Disc' },
+  { year: '1995', text: 'DVD standard introduced (4.7 GB)' },
+  { year: '2006', text: 'Blu-ray Disc released (25 GB per layer)' },
+  { year: '2013', text: 'NVMe protocol standardized for PCIe SSDs' },
+  { year: '2019', text: 'DNA data storage demonstrated at scale' },
+];
+---
+
+<section class="timeline-section">
+  <div class="timeline-inner">
+    <div class="section-label">Timeline</div>
+    <div class="timeline-scroll">
+      {events.map((e) => (
+        <div class="timeline-item">
+          <span class="t-year">{e.year}</span>
+          <div class="t-dot"></div>
+          <p class="t-text">{e.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

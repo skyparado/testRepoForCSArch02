@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Origin — Full Capacity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/origin.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">FULL CAPACITY</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#exhibits">Explore</a></li>
+      <li><a href="about.html">About Us</a></li>
+    </ul>
+    <a href="index.html" class="btn btn-outline">Back to Main</a>
+  </nav>
+
+  <div class="exhibit-page-wrap">
+
+    <!-- TABLE OF CONTENTS -->
+    <aside class="toc-sidebar">
+      <h2 class="toc-heading">Table of Contents</h2>
+      <ul class="toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#punch-cards">Punch Cards</a></li>
+        <li><a href="#magnetic-drums">Magnetic Drums</a></li>
+        <li><a href="#batch-processing-systems">Batch Processing Systems</a></li>
+        <li><a href="#sequential-data-access">Sequential Data Access</a></li>
+        <li><a href="#simulator">Simulator</a></li>
+        <li><a href="#foundations-digital">Foundations of Digital Storage</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="exhibit-main">
+      <div class="exhibit-header-bar">
+        <a href="index.html" class="back-link">&larr; Back to Exhibits</a>
+        <h1 class="exhibit-page-title">THE ORIGIN:</h1>
+        <p class="exhibit-page-sub">Punch Cards and Magnetic Drums</p>
+        <span class="exhibit-meta">by Mojica, Maurienne Marie M. &middot; 15 minute read</span>
+      </div>
+
+      <article class="article-body">
+
+        <section id="intro">
+          <h2>Introduction</h2>
+          <p style="text-align: justify;">
+            This section explores the earliest forms of computer data storage and processing.
+            It examines how punch cards were used to encode and input data, and how magnetic
+            drums served as one of the first electronic storage devices. These technologies
+            established the foundations of data representation, storage, and retrieval in
+            early computer systems.
+          </p>
+        </section>
+
+        <section id="punch-cards">
+          <h2>Punch Cards: Data Encoding and Processing</h2>
+           <p style="text-align: justify;">
+        Punch cards were one of the earliest methods used to encode and process digital information. 
+        Data and instructions were represented by holes punched into specific positions on a card, 
+        with each hole corresponding to a character or piece of information that machines 
+        could read automatically.
+      </p>
+
+          <div style="position: relative; width: 100%; overflow: hidden; border-radius: 8px; margin: 1.5rem 0;">
+      <img id="slideshow-punch" src="../src/assets/punch.png" alt="Punch card photo"
+        style="width: 100%; display: block; transition: opacity 0.2s ease-in-out;" />
+    </div>
+
+        <p style="text-align: justify;">
+        The idea was inspired by train conductors who punched holes 
+        into railway tickets to record passenger details. <strong>Herman Hollerith </strong> later adapted 
+        this concept to create machine-readable punch cards for the 1890 US Census, allowing 
+        data to be processed faster and more efficiently. IBM later standardized the technology 
+        through the <strong>IBM Computer Card</strong>, which became essential in early computer systems. 
+        Each card typically stored one line of program code or data, and stacks of cards 
+        were processed through card readers to input information into computers and tabulating machines.
+    </p>
+        </section>
+
+        <section id="magnetic-drums">
+          <h2>Magnetic Drums: Memory Operations</h2>
+          <p style="text-align: justify;">
+            The magnetic drum was invented by <strong>Gustav Tauschek in 1932</strong>  and was later utilized by the <strong>US 
+            Navy during World War II</strong>. It served as an early form of computer memory and storage. The 
+            device consisted of a large metal cylinder coated with magnetic iron-oxide material, where 
+            information was stored through magnetic polarities.</p>
+            
+            <div style="position: relative; width: 100%; overflow: hidden; border-radius: 8px; margin: 1.5rem 0;">
+            <img id="slideshow-drum" src="../src/assets/magnetic-drums.png" alt="Magnetic drum photo"
+              style="width: 100%; display: block; transition: opacity 0.2s ease-in-out;" />
+          </div>
+
+            <p style="text-align: justify;">
+            Data was written on the outer surface of the 
+            drum, similar to how modern hard drives operate. However, unlike modern drives, the read/write 
+            heads remained fixed while the drum rotated rapidly. As the drum spun, the heads waited for the 
+            needed data to pass by in order to read or write information. Although magnetic drums could hold
+             significantly more data than punch cards, their storage capacity was still very limited by today’s 
+             standards, usually only a few kilobytes. 
+          </p>
+        </section>
+
+        <section id="batch-processing-systems">
+          <h2>Batch Processing Systems</h2>
+          <p style="text-align: justify;">
+            Batch processing systems were early computing methods where multiple jobs were grouped together and processed 
+            automatically in sequence without direct user interaction. Punch cards were used to input programs and data,
+             while magnetic drums stored the information during processing. Once loaded, the computer executed each job 
+             continuously in order, improving efficiency and reducing manual operation.
+          </p>
+        </section>
+
+        <section id="sequential-data-access">
+          <h2>Sequential Data Access</h2>
+          <p style="text-align: justify;">
+            Sequential data access was a method where data was stored and retrieved in a fixed order. Systems like punch 
+            cards and magnetic drums required earlier records to be read first before the desired information could be
+             reached. This process made data access slower compared to modern random-access storage systems.</p>
+        </section>
+
+        <section id="simulator">
+        <h2>Interactive: Text-to-Punch Card Simulator</h2>
+        <p style="text-align: justify;">
+          Use the typewriter keyboard below to "type" onto a virtual IBM-style punch card.
+          Each keystroke is encoded in real time using <strong>Hollerith Code</strong> — the
+          same row/column scheme used on actual 1928-standard punch cards.
+        </p>
+      
+        <div class="punch-sim-wrap">
+      
+          <div class="punch-card-frame">
+            <div class="punch-card-titlebar">TEXT-TO-PUNCH CARD SIMULATOR</div>
+            <canvas id="punchCanvas" width="900" height="220" aria-label="Punch card visualization"></canvas>
+          </div>
+      
+          <div class="punch-output" id="punchOutput"></div>
+      
+          <!-- Virtual typewriter keyboard -->
+          <div class="typewriter">
+            <div class="tw-row">
+              <button class="tw-key" data-char="1" data-shift="!">
+                <span class="tw-top">!</span><span class="tw-bot">1</span>
+              </button>
+              <button class="tw-key" data-char="2" data-shift="&quot;">
+                <span class="tw-top">&quot;</span><span class="tw-bot">2</span>
+              </button>
+              <button class="tw-key" data-char="3" data-shift="#">
+                <span class="tw-top">#</span><span class="tw-bot">3</span>
+              </button>
+              <button class="tw-key" data-char="4" data-shift="$">
+                <span class="tw-top">$</span><span class="tw-bot">4</span>
+              </button>
+              <button class="tw-key" data-char="5" data-shift="%">
+                <span class="tw-top">%</span><span class="tw-bot">5</span>
+              </button>
+              <button class="tw-key" data-char="6" data-shift="-">
+                <span class="tw-top">-</span><span class="tw-bot">6</span>
+              </button>
+              <button class="tw-key" data-char="7" data-shift="+">
+                <span class="tw-top">+</span><span class="tw-bot">7</span>
+              </button>
+              <button class="tw-key" data-char="8" data-shift="8">
+                <span class="tw-top">&nbsp;</span><span class="tw-bot">8</span>
+              </button>
+              <button class="tw-key" data-char="9" data-shift="(">
+                <span class="tw-top">(</span><span class="tw-bot">9</span>
+              </button>
+              <button class="tw-key" data-char="0" data-shift=")">
+                <span class="tw-top">)</span><span class="tw-bot">0</span>
+              </button>
+              <button class="tw-key tw-wide" data-action="backspace">
+                <span class="tw-bot">BACK<br>SPACE</span>
+              </button>
+            </div>
+      
+            <div class="tw-row tw-indent-1">
+              <button class="tw-key" data-char="q">Q</button>
+              <button class="tw-key" data-char="w">W</button>
+              <button class="tw-key" data-char="e">E</button>
+              <button class="tw-key" data-char="r">R</button>
+              <button class="tw-key" data-char="t">T</button>
+              <button class="tw-key" data-char="y">Y</button>
+              <button class="tw-key" data-char="u">U</button>
+              <button class="tw-key" data-char="i">I</button>
+              <button class="tw-key" data-char="o">O</button>
+              <button class="tw-key" data-char="p">P</button>
+              <button class="tw-key" data-char="." data-shift=":">
+                <span class="tw-top">:</span><span class="tw-bot">.</span>
+              </button>
+            </div>
+      
+            <div class="tw-row tw-indent-2">
+              <button class="tw-key tw-wide" data-action="shiftlock" id="shiftLockKey">
+                <span class="tw-bot">SHIFT<br>LOCK</span>
+              </button>
+              <button class="tw-key" data-char="a">A</button>
+              <button class="tw-key" data-char="s">S</button>
+              <button class="tw-key" data-char="d">D</button>
+              <button class="tw-key" data-char="f">F</button>
+              <button class="tw-key" data-char="g">G</button>
+              <button class="tw-key" data-char="h">H</button>
+              <button class="tw-key" data-char="j">J</button>
+              <button class="tw-key" data-char="k">K</button>
+              <button class="tw-key" data-char="l">L</button>
+              <button class="tw-key" data-char=";" data-shift=":">
+                <span class="tw-top">:</span><span class="tw-bot">;</span>
+              </button>
+            </div>
+      
+            <div class="tw-row tw-indent-3">
+              <button class="tw-key tw-wide" data-action="shift" id="shiftKeyLeft">
+                <span class="tw-bot">SHIFT<br>KEY</span>
+              </button>
+              <button class="tw-key" data-char="z">Z</button>
+              <button class="tw-key" data-char="x">X</button>
+              <button class="tw-key" data-char="c">C</button>
+              <button class="tw-key" data-char="v">V</button>
+              <button class="tw-key" data-char="b">B</button>
+              <button class="tw-key" data-char="n">N</button>
+              <button class="tw-key" data-char="m">M</button>
+              <button class="tw-key" data-char="," data-shift="?">
+                <span class="tw-top">?</span><span class="tw-bot">,</span>
+              </button>
+              <button class="tw-key tw-wide" data-action="shift" id="shiftKeyRight">
+                <span class="tw-bot">SHIFT<br>KEY</span>
+              </button>
+            </div>
+      
+            <div class="tw-row tw-spacerow">
+              <button class="tw-spacebar" data-char=" " aria-label="Space"></button>
+            </div>
+          </div>
+      
+          <div class="sim-legend">
+            <div class="sim-legend-item">
+              <div class="legend-swatch" style="background:#111128;border:1px solid #333;"></div>
+              <span>Punched hole</span>
+            </div>
+            <div class="sim-legend-item">
+              <div class="legend-swatch" style="background:#3a3520;border:1px solid #554;"></div>
+              <span>Unpunched position</span>
+            </div>
+          </div>
+      
+          <div class="sim-note">
+          <p><strong>Hollerith Code:</strong></p>
+          <ul style="text-align: justify;">
+            <li><strong>[DIGITS]</strong> punch a single hole in their own row (0–9).</li>
+            <li><strong>[LETTERS]</strong> need two holes — a zone punch (row 12, 11, or 0) combined with a digit punch (1–9).</li>
+            <li><strong>[A–I]</strong> use zone 12, <strong>[J–R]</strong> use zone 11, <strong>[S–Z]</strong> use zone 0.</li>
+            <li><strong>[SHIFT LOCK] and [SHIFT KEY]</strong> toggle the number keys between their digit and symbol characters,just like a real mechanical typewriter.</li>
+          </ul>
+
+          <p><strong><br>Note that:</strong></p>
+          <ul style="text-align: justify;">
+            <li>This simulator only punches <strong>letters, numbers, and spaces</strong> (symbols are shown but left unpunched to keep the card readable).</li>
+            <li>Standard Hollerith code <strong>has no separate lowercase encoding</strong> — letter keys punch the same hole pattern regardless of shift state, matching how the original keypunch machines worked.</li>
+          </ul>
+        </div>
+        </div>
+      </section>
+
+        <section id="foundations-digital">
+          <h2>Foundations of Digital Storage</h2>
+          <p style="text-align: justify;">
+            Early technologies such as punch cards and magnetic drums laid the foundations of digital data storage by 
+            introducing methods for encoding, storing, and retrieving information.<br><br>These systems established basic storage 
+            principles that later evolved into:
+            <ul>
+              <li><strong>Modern Hard Drives</strong></li>
+              <li><strong>Memory Devices</strong></li>
+              <li><strong>Digital Storage Technologies</strong></li>
+            </ul>
+          </p>
+        </section>
+
+        <section id="references">
+          <h2>References</h2>
+          <ul style="text-align: justify;">
+            <li>IBM. (n.d.). <em>The Punched Card.</em> Retrieved June 30, 2026, from https://www.ibm.com/history/punched-card</li>
+            <li>Computer Hope. (2025, June 25). <em>Punch Card.</em> Retrieved June 30, 2026, from https://www.computerhope.com/jargon/p/punccard.htm</li>
+            <li>Foote, K. (2017, November 1). <em>A Brief History of Data Storage.</em> DATAVERSITY. Retrieved June 30, 2026, from https://www.dataversity.net/articles/brief-history-data-storage/</li>
+            <li>IBM. (n.d.). <em>The IBM 650.</em> Retrieved June 30, 2026, from https://www.ibm.com/history/650</li>
+            <li>Bidnur, R. (2021, October 20). <em>Data Explosion and Data Storage Device Evolution.</em> Smartsoc. Retrieved June 30, 2026, from https://www.smartsocs.com/data-explosion-and-data-storage-device-evolution/</li>
+            <li><em>The IBM 029 Card Punch.</em> (2018, June 23). Retrieved June 30, 2026, from https://twobithistory.org/2018/06/23/ibm-029-card-punch.html</li>
+          </ul>
+        </section>
+
+      </article>
+    </main>
+
+    <!-- RIGHT SPACER (mirrors sidebar for centering) -->
+    <div></div>
+
+  </div>
+
+  <footer class="footer">
+    FULL CAPACITY &mdash; The Evolution of Computer Data Storage &mdash; CSARCH2 Group 7 [S01]
+  </footer>
+
+  <script src="css/main.js"></script>
+  <script src="js/origin.js"></script>
+  <script>
+    createSlideshow("slideshow-punch", [
+      "../src/assets/punch.png",
+      "../src/assets/train.png"
+    ]);
+
+    createSlideshow("slideshow-drum", [
+      "../src/assets/magnetic-drums.png",
+      "../src/assets/drums-history.jpg"
+    ]);
+</script>
+</body>
+</html>

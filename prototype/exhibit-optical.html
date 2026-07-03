@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Optical Age — Full Capacity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">FULL CAPACITY</div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#exhibits">Explore</a></li>
+      <li><a href="about.html">About Us</a></li>
+    </ul>
+    <a href="index.html" class="btn btn-outline nav-cta">Back to Main</a>
+  </nav>
+
+  <div class="exhibit-page-wrap">
+
+    <aside class="toc-sidebar">
+      <h2 class="toc-heading">Contents</h2>
+      <ul class="toc-list" id="tocList">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#pits-lands">Pits &amp; Lands</a></li>
+        <li><a href="#standards">CD vs DVD vs Blu-ray</a></li>
+        <li><a href="#simulator">Interactive Simulator</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </aside>
+
+    <main class="exhibit-main">
+      <div class="exhibit-header-bar">
+        <a href="index.html" class="back-link">&larr; Back to Exhibits</a>
+        <h1 class="exhibit-page-title">THE OPTICAL AGE:</h1>
+        <p class="exhibit-page-sub">CDs, DVDs, and Their Limits</p>
+        <span class="exhibit-meta">by Parado, Sky Hannah G. &middot; ~12 minute read</span>
+      </div>
+
+      <article class="article-body">
+
+        <section id="intro">
+          <h2>Introduction</h2>
+          <p>
+            Magnetic storage was fast but fragile — disks warped, drives crashed, tapes degraded.
+            In 1982, Sony and Philips answered with the <strong>Compact Disc</strong>: 650 MB on
+            a coaster-sized disc, read by light alone, never touching the surface. It outlasted
+            every magnetic medium of its era.
+          </p>
+          <p>
+            Over 30 years, optical storage evolved through three generations — CD (1982),
+            DVD (1995), and Blu-ray (2006) — each squeezing more data onto the same disc by
+            using shorter and shorter wavelengths of laser light.
+          </p>
+        </section>
+
+        <section id="how-it-works">
+          <h2>How Optical Storage Works</h2>
+          <p>
+            A disc is a sandwich of layers. The laser reads from the bottom up:
+          </p>
+
+          <div class="cd-diagram">
+            <div class="cd-layer">
+              <span class="cd-layer-label">Label &amp; printing</span>
+              <div class="cd-layer-bar layer-label"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Lacquer (protective coat)</span>
+              <div class="cd-layer-bar layer-lacquer"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Reflective aluminum layer</span>
+              <div class="cd-layer-bar layer-reflect"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Polycarbonate substrate</span>
+              <div class="cd-layer-bar layer-pc"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">&#x2191; Laser reads from here</span>
+              <div class="cd-layer-bar layer-laser"></div>
+            </div>
+          </div>
+
+          <p>
+            Data is stamped into the polycarbonate as a spiral of microscopic bumps called
+            <strong>pits</strong>, separated by flat areas called <strong>lands</strong>.
+            A <strong>laser diode</strong> shines through the base onto the track — lands reflect
+            the beam back cleanly (high signal), while pit edges scatter it (low signal).
+            Those highs and lows become binary data.
+          </p>
+
+          <h3>Why Wavelength Matters</h3>
+          <p>
+            A laser can only resolve features about half its wavelength in size. Shorter = smaller
+            pits = more data. CD uses <strong>780 nm</strong> (infrared), DVD uses <strong>650 nm</strong>
+            (red), and Blu-ray uses <strong>405 nm</strong> (violet) — that's why capacity jumps
+            so dramatically across formats.
+          </p>
+        </section>
+
+        <section id="pits-lands">
+          <h2>Pits and Lands as Binary Data</h2>
+          <p>
+            Common misconception: pits ≠ 1s and lands ≠ 0s. On real CDs, it's the
+            <strong>transitions</strong> between pit and land that represent a
+            <code style="color:var(--accent-green)">1</code> — staying on either surface
+            (no transition) is a <code style="color:var(--accent-green)">0</code>.
+            This is called <strong>NRZI</strong> encoding.
+          </p>
+          <ul>
+            <li><strong>Noise immunity</strong> — no baseline needed between bits, easier to read at speed.</li>
+            <li><strong>Self-clocking</strong> — the drive syncs its clock to the transitions themselves.</li>
+          </ul>
+          <p>
+            Before hitting the disc, data also goes through <strong>Eight-to-Fourteen Modulation (EFM)</strong>,
+            which converts each byte into a 14-bit pattern — guaranteeing no run of identical signal
+            is too long or too short for the optics to track.
+          </p>
+        </section>
+
+        <section id="standards">
+          <h2>CD vs. DVD vs. Blu-ray</h2>
+          <p>Shorter wavelength = smaller pits = more data. Same disc, totally different capacity:</p>
+
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Format</th>
+                <th>Year</th>
+                <th>Laser</th>
+                <th>Wavelength</th>
+                <th>Track pitch</th>
+                <th>Min. pit size</th>
+                <th>Capacity (1 layer)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CD</td>
+                <td>1982</td>
+                <td>Infrared</td>
+                <td>780 nm</td>
+                <td>1,600 nm</td>
+                <td>833 nm</td>
+                <td>700 MB</td>
+              </tr>
+              <tr>
+                <td>DVD</td>
+                <td>1995</td>
+                <td>Red</td>
+                <td>650 nm</td>
+                <td>740 nm</td>
+                <td>400 nm</td>
+                <td>4.7 GB</td>
+              </tr>
+              <tr>
+                <td>Blu-ray</td>
+                <td>2006</td>
+                <td>Violet</td>
+                <td>405 nm</td>
+                <td>320 nm</td>
+                <td>149 nm</td>
+                <td>25 GB</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>
+            The track pitch shrinks 5&times; from CD to Blu-ray, giving Blu-ray ~35&times; more
+            capacity on the exact same diameter disc. The tradeoff: Blu-ray's thinner protective
+            layer (0.1 mm vs. DVD's 0.6 mm) makes it more scratch-prone.
+          </p>
+        </section>
+
+        <section id="simulator">
+          <h2>Interactive: Optical Pit &amp; Land Encoder</h2>
+          <p>
+            Type up to 3 characters, hit <strong>Encode</strong> to see your text as a disc track
+            (dark = pit, bright = land), then <strong>Scan</strong> to watch the laser read it back.
+          </p>
+
+          <div class="sim-wrap">
+            <div class="sim-controls">
+              <input
+                type="text"
+                id="simInput"
+                class="sim-input"
+                maxlength="3"
+                placeholder="Type up to 3 chars..."
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <button class="btn btn-primary btn-sm" id="encodeBtn">Encode to Disc</button>
+            </div>
+
+            <div class="sim-binary" id="binaryDisplay"></div>
+
+            <canvas id="discCanvas" width="672" height="200" aria-label="Optical disc track visualization"></canvas>
+
+            <div class="sim-actions">
+              <button class="btn btn-primary btn-sm" id="scanBtn" disabled>&#9654; Scan with Laser</button>
+              <button class="btn btn-outline btn-sm" id="resetBtn">Reset</button>
+              <span class="sim-spinner" id="scanSpinner" style="display:none;">SCANNING...</span>
+            </div>
+
+            <div class="sim-output" id="simOutput"></div>
+
+            <div class="sim-legend">
+              <div class="sim-legend-item">
+                <div class="legend-swatch" style="background:#9090c8;border:1px solid #aaa;"></div>
+                <span>Land (bit = 1) — reflects laser</span>
+              </div>
+              <div class="sim-legend-item">
+                <div class="legend-swatch" style="background:#111128;border:1px solid #333;"></div>
+                <span>Pit (bit = 0) — absorbs laser</span>
+              </div>
+              <div class="sim-legend-item">
+                <div class="legend-swatch" style="background:#ff4444;border:1px solid #ff6666;border-radius:50%;"></div>
+                <span>Laser beam</span>
+              </div>
+            </div>
+
+            <p class="sim-note">
+              <strong>Simplified model:</strong> Real CDs use NRZI — it's <em>transitions</em>
+              between pit and land that equal 1, not the pit itself. Data also goes through EFM
+              encoding before pressing. This sim skips that to keep things visual.
+            </p>
+          </div>
+        </section>
+
+        <section id="references">
+          <h2>References</h2>
+          <ul>
+            <li>Bouwhuis, G. et al. (1985). <em>Principles of Optical Disc Systems.</em> Adam Hilger Ltd.</li>
+            <li>Blu-ray Disc Association. (2006). <em>Blu-ray Disc Format: General.</em></li>
+            <li>Immink, K. A. S. (1998). Eight-to-Fourteen Modulation. <em>IEEE Communications Magazine, 36</em>(8), 50–57.</li>
+            <li>Pohlmann, K. C. (2000). <em>The Compact Disc Handbook</em> (2nd ed.). A-R Editions.</li>
+            <li>Nakamura, S. (1995). The Birth of the Blue LED. <em>Nobel Lecture</em> (adapted for Blu-ray violet laser context).</li>
+          </ul>
+        </section>
+
+      </article>
+    </main>
+
+    <div></div>
+  </div>
+
+  <footer class="footer">
+    FULL CAPACITY &mdash; The Evolution of Computer Data Storage<br>
+    CSARCH2 Group 7 [S01] &mdash; De La Salle University &mdash; 3rd Term, A.Y. 2025&ndash;2026
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // lights up the toc link that matches whichever section is on screen
+    const sections = document.querySelectorAll('section[id]');
+    const tocLinks  = document.querySelectorAll('#tocList a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+
+    const canvas  = document.getElementById('discCanvas');
+    const ctx     = canvas.getContext('2d');
+
+    // Handle device pixel ratio for crisp rendering
+    const DPR = window.devicePixelRatio || 1;
+    const W_CSS = 672, H_CSS = 200;
+    canvas.width  = W_CSS * DPR;
+    canvas.height = H_CSS * DPR;
+    canvas.style.width  = W_CSS + 'px';
+    canvas.style.height = H_CSS + 'px';
+    ctx.scale(DPR, DPR);
+
+    const TRACK_Y = 75;      // y where track starts
+    const TRACK_H = 50;      // track height
+    const BIT_LABEL_Y = 60;  // y for bit labels
+    const REFLECT_Y   = 155; // y for reflection indicator
+    const MAX_CHARS   = 3;
+    const MAX_BITS    = MAX_CHARS * 8; // 24
+
+    let bits = [];
+    let scanAnimId = null;
+    let isScanning = false;
+
+    function cellWidth() {
+      return bits.length > 0 ? Math.floor(W_CSS / bits.length) : 28;
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, W_CSS, H_CSS);
+      // Empty track
+      ctx.fillStyle = '#050010';
+      ctx.fillRect(0, 0, W_CSS, H_CSS);
+      // Guide line
+      ctx.strokeStyle = 'rgba(128,0,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, TRACK_Y - 20);
+      ctx.lineTo(W_CSS, TRACK_Y - 20);
+      ctx.stroke();
+      // Placeholder text
+      ctx.fillStyle = 'rgba(170,170,204,0.2)';
+      ctx.font = `11px "Space Mono", monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText('TYPE TEXT AND CLICK ENCODE TO SEE THE DISC TRACK', W_CSS / 2, H_CSS / 2);
+    }
+
+    function drawTrack(highlightIdx) {
+      ctx.clearRect(0, 0, W_CSS, H_CSS);
+
+      const cw = cellWidth();
+      const totalW = bits.length * cw;
+      const offsetX = Math.floor((W_CSS - totalW) / 2);
+
+      // Background
+      ctx.fillStyle = '#050010';
+      ctx.fillRect(0, 0, W_CSS, H_CSS);
+
+      // Outer track surround (dark silver)
+      ctx.fillStyle = '#1a1a2a';
+      ctx.fillRect(offsetX - 2, TRACK_Y - 2, totalW + 4, TRACK_H + 4);
+
+      // Draw each bit cell
+      bits.forEach((bit, i) => {
+        const x = offsetX + i * cw;
+
+        if (bit === 1) {
+          // Land — reflective, bright
+          ctx.fillStyle = '#8888c0';
+          ctx.fillRect(x + 1, TRACK_Y, cw - 1, TRACK_H);
+          // Sheen highlight
+          ctx.fillStyle = 'rgba(255,255,255,0.12)';
+          ctx.fillRect(x + 2, TRACK_Y + 2, cw - 4, 6);
+        } else {
+          // Pit — dark, absorptive
+          ctx.fillStyle = '#111128';
+          ctx.fillRect(x + 1, TRACK_Y, cw - 1, TRACK_H);
+          // Depth shadow
+          ctx.fillStyle = '#07070f';
+          ctx.fillRect(x + 3, TRACK_Y + 6, cw - 6, TRACK_H - 12);
+        }
+
+        // Cell border
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(x, TRACK_Y, cw, TRACK_H);
+
+        // Bit label above track
+        const isActive = i === highlightIdx;
+        ctx.font = `bold ${cw < 22 ? 9 : 11}px "Space Mono", monospace`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = isActive
+          ? '#39FF14'
+          : (bit === 1 ? '#6060aa' : '#444466');
+        ctx.fillText(bit.toString(), x + cw / 2, BIT_LABEL_Y);
+
+        // Byte separators
+        if (i > 0 && i % 8 === 0) {
+          ctx.strokeStyle = 'rgba(255,0,255,0.3)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 2]);
+          ctx.beginPath();
+          ctx.moveTo(x, TRACK_Y - 18);
+          ctx.lineTo(x, TRACK_Y + TRACK_H + 18);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      });
+
+      // Laser + reflection display
+      if (highlightIdx >= 0 && highlightIdx < bits.length) {
+        const laserX = offsetX + highlightIdx * cw + cw / 2;
+        const currentBit = bits[highlightIdx];
+
+        // Laser beam line
+        ctx.strokeStyle = 'rgba(255,60,60,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(laserX, 20);
+        ctx.lineTo(laserX, TRACK_Y + TRACK_H + 30);
+        ctx.stroke();
+
+        // Laser dot on track
+        ctx.beginPath();
+        ctx.arc(laserX, TRACK_Y + TRACK_H / 2, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff4444';
+        ctx.shadowColor = '#ff6666';
+        ctx.shadowBlur = 14;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Reflection ray (upward) — only for lands
+        if (currentBit === 1) {
+          ctx.strokeStyle = 'rgba(180,180,255,0.6)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(laserX - 4, TRACK_Y);
+          ctx.lineTo(laserX - 12, 10);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(laserX + 4, TRACK_Y);
+          ctx.lineTo(laserX + 12, 10);
+          ctx.stroke();
+        }
+
+        // Status label below track
+        ctx.font = '10px "Space Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = currentBit === 1 ? '#8888cc' : '#333355';
+        ctx.fillText(currentBit === 1 ? 'LAND — REFLECTS' : 'PIT — ABSORBS', laserX, REFLECT_Y);
+
+        // Bit reading display (bottom right)
+        ctx.font = 'bold 12px "Space Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#39FF14';
+        ctx.fillText('bit[' + highlightIdx + '] = ' + currentBit, W_CSS - 10, H_CSS - 8);
+      }
+    }
+
+    function resetSim() {
+      if (scanAnimId) cancelAnimationFrame(scanAnimId);
+      isScanning = false;
+      bits = [];
+      document.getElementById('binaryDisplay').innerHTML = '';
+      document.getElementById('simOutput').textContent  = '';
+      document.getElementById('scanBtn').disabled        = true;
+      document.getElementById('scanSpinner').style.display = 'none';
+      clearCanvas();
+    }
+
+    function encodeInput() {
+      const text = document.getElementById('simInput').value.slice(0, MAX_CHARS);
+      if (!text.trim()) {
+        document.getElementById('binaryDisplay').innerHTML = '<span style="color:var(--accent-magenta)">Please type something first.</span>';
+        return;
+      }
+
+      if (scanAnimId) cancelAnimationFrame(scanAnimId);
+      isScanning = false;
+
+      bits = [];
+      const byteGroups = [];
+      for (const ch of text) {
+        const code = ch.charCodeAt(0);
+        const b = code.toString(2).padStart(8, '0');
+        byteGroups.push(b);
+        for (const bit of b) bits.push(parseInt(bit, 10));
+      }
+
+      const displayHTML = byteGroups.map((g, i) => {
+        const char = text[i];
+        return `<span style="color:var(--accent-cyan)">${g}</span><span style="color:rgba(170,170,204,0.4)"> (${char})</span>`;
+      }).join(' ');
+
+      document.getElementById('binaryDisplay').innerHTML = 'Binary: ' + displayHTML;
+      document.getElementById('simOutput').textContent = '';
+      document.getElementById('scanBtn').disabled = false;
+      document.getElementById('scanSpinner').style.display = 'none';
+
+      drawTrack(-1);
+    }
+
+    function startScan() {
+      if (isScanning || bits.length === 0) return;
+      isScanning = true;
+
+      document.getElementById('scanBtn').disabled = true;
+      document.getElementById('scanSpinner').style.display = 'inline';
+      document.getElementById('simOutput').textContent = '';
+
+      const readBits = [];
+      let idx = 0;
+      let lastTime = null;
+      const MS_PER_BIT = 130;
+
+      function step(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        const elapsed = timestamp - lastTime;
+
+        if (elapsed >= MS_PER_BIT) {
+          drawTrack(idx);
+          readBits.push(bits[idx]);
+
+          // Update partial decode
+          let partial = '';
+          for (let b = 0; b + 7 < readBits.length; b += 8) {
+            const byte = readBits.slice(b, b + 8).join('');
+            partial += String.fromCharCode(parseInt(byte, 2));
+          }
+          if (partial) {
+            document.getElementById('simOutput').textContent = 'Reading: "' + partial + '"';
+          }
+
+          idx++;
+          lastTime = timestamp;
+        }
+
+        if (idx < bits.length) {
+          scanAnimId = requestAnimationFrame(step);
+        } else {
+          // Scan complete
+          drawTrack(-1);
+          let decoded = '';
+          for (let b = 0; b + 7 < readBits.length; b += 8) {
+            const byte = readBits.slice(b, b + 8).join('');
+            decoded += String.fromCharCode(parseInt(byte, 2));
+          }
+          document.getElementById('simOutput').textContent = '✓ Decoded: "' + decoded + '"';
+          document.getElementById('scanSpinner').style.display = 'none';
+          document.getElementById('scanBtn').disabled = false;
+          isScanning = false;
+        }
+      }
+
+      scanAnimId = requestAnimationFrame(step);
+    }
+
+    // Event bindings
+    document.getElementById('encodeBtn').addEventListener('click', encodeInput);
+    document.getElementById('scanBtn').addEventListener('click', startScan);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('simInput').value = '';
+      resetSim();
+    });
+    document.getElementById('simInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') encodeInput();
+    });
+
+    // Init
+    clearCanvas();
+  </script>
+</body>
+</html>

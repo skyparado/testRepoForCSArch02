@@ -1,0 +1,144 @@
+---
+layout: '../layouts/ExhibitPageLayout.astro'
+title: "The Origin — Full Capacity"
+pageTitle: "THE ORIGIN:"
+subtitle: "Punch Cards and Magnetic Drums"
+author: "Mojica, Maurienne Marie M."
+readingTime: "15 minute read"
+toc:
+  - href: "#intro"
+    label: "Introduction"
+  - href: "#punch-cards"
+    label: "Punch Cards"
+  - href: "#magnetic-drums"
+    label: "Magnetic Drums"
+  - href: "#batch-processing-systems"
+    label: "Batch Processing Systems"
+  - href: "#sequential-data-access"
+    label: "Sequential Data Access"
+  - href: "#simulator"
+    label: "Simulator"
+  - href: "#foundations-digital"
+    label: "Foundations of Digital Storage"
+  - href: "#references"
+    label: "References"
+---
+
+import '../styles/origin.css';
+import PunchCardSimulator from '../components/PunchCardSimulator.jsx';
+import ImageSlideshow from '../components/ImageSlideshow.jsx';
+import punch from '../assets/punch.png';
+import train from '../assets/train.png';
+import magneticDrums from '../assets/magnetic-drums.png';
+import drumsHistory from '../assets/drums-history.jpg';
+
+<section id="intro">
+  <h2>Introduction</h2>
+  <p style="text-align: justify;">
+    This section explores the earliest forms of computer data storage and processing.
+    It examines how punch cards were used to encode and input data, and how magnetic
+    drums served as one of the first electronic storage devices. These technologies
+    established the foundations of data representation, storage, and retrieval in
+    early computer systems.
+  </p>
+</section>
+
+<section id="punch-cards">
+  <h2>Punch Cards: Data Encoding and Processing</h2>
+  <p style="text-align: justify;">
+    Punch cards were one of the earliest methods used to encode and process digital information.
+    Data and instructions were represented by holes punched into specific positions on a card,
+    with each hole corresponding to a character or piece of information that machines
+    could read automatically.
+  </p>
+
+  <ImageSlideshow client:load images={[punch.src, train.src]} alt="Punch card photo" />
+
+  <p style="text-align: justify;">
+    The idea was inspired by train conductors who punched holes
+    into railway tickets to record passenger details. <strong>Herman Hollerith</strong> later adapted
+    this concept to create machine-readable punch cards for the 1890 US Census, allowing
+    data to be processed faster and more efficiently. IBM later standardized the technology
+    through the <strong>IBM Computer Card</strong>, which became essential in early computer systems.
+    Each card typically stored one line of program code or data, and stacks of cards
+    were processed through card readers to input information into computers and tabulating machines.
+  </p>
+</section>
+
+<section id="magnetic-drums">
+  <h2>Magnetic Drums: Memory Operations</h2>
+  <p style="text-align: justify;">
+    The magnetic drum was invented by <strong>Gustav Tauschek in 1932</strong> and was later utilized by the <strong>US
+    Navy during World War II</strong>. It served as an early form of computer memory and storage. The
+    device consisted of a large metal cylinder coated with magnetic iron-oxide material, where
+    information was stored through magnetic polarities.
+  </p>
+
+  <ImageSlideshow client:load images={[magneticDrums.src, drumsHistory.src]} alt="Magnetic drum photo" />
+
+  <p style="text-align: justify;">
+    Data was written on the outer surface of the
+    drum, similar to how modern hard drives operate. However, unlike modern drives, the read/write
+    heads remained fixed while the drum rotated rapidly. As the drum spun, the heads waited for the
+    needed data to pass by in order to read or write information. Although magnetic drums could hold
+    significantly more data than punch cards, their storage capacity was still very limited by today's
+    standards, usually only a few kilobytes.
+  </p>
+</section>
+
+<section id="batch-processing-systems">
+  <h2>Batch Processing Systems</h2>
+  <p style="text-align: justify;">
+    Batch processing systems were early computing methods where multiple jobs were grouped together and processed
+    automatically in sequence without direct user interaction. Punch cards were used to input programs and data,
+    while magnetic drums stored the information during processing. Once loaded, the computer executed each job
+    continuously in order, improving efficiency and reducing manual operation.
+  </p>
+</section>
+
+<section id="sequential-data-access">
+  <h2>Sequential Data Access</h2>
+  <p style="text-align: justify;">
+    Sequential data access was a method where data was stored and retrieved in a fixed order. Systems like punch
+    cards and magnetic drums required earlier records to be read first before the desired information could be
+    reached. This process made data access slower compared to modern random-access storage systems.
+  </p>
+</section>
+
+<section id="simulator">
+  <h2>Interactive: Text-to-Punch Card Simulator</h2>
+  <p style="text-align: justify;">
+    Use the typewriter keyboard below to "type" onto a virtual IBM-style punch card.
+    Each keystroke is encoded in real time using <strong>Hollerith Code</strong> — the
+    same row/column scheme used on actual 1928-standard punch cards.
+  </p>
+
+  <PunchCardSimulator client:load />
+</section>
+
+<section id="foundations-digital">
+  <h2>Foundations of Digital Storage</h2>
+  <p style="text-align: justify;">
+    Early technologies such as punch cards and magnetic drums laid the foundations of digital data storage by
+    introducing methods for encoding, storing, and retrieving information.
+    <br /><br />
+    These systems established basic storage principles that later evolved into:
+  </p>
+  <ul>
+    <li><strong>Modern Hard Drives</strong></li>
+    <li><strong>Memory Devices</strong></li>
+    <li><strong>Digital Storage Technologies</strong></li>
+  </ul>
+</section>
+
+<section id="references">
+  <h2>References</h2>
+  <ul style="text-align: justify;">
+    <li>IBM. (n.d.). <em>The Punched Card.</em> Retrieved June 30, 2026, from https://www.ibm.com/history/punched-card</li>
+    <li>Computer Hope. (2025, June 25). <em>Punch Card.</em> Retrieved June 30, 2026, from https://www.computerhope.com/jargon/p/punccard.htm</li>
+    <li>Foote, K. (2017, November 1). <em>A Brief History of Data Storage.</em> DATAVERSITY. Retrieved June 30, 2026, from https://www.dataversity.net/articles/brief-history-data-storage/</li>
+    <li>IBM. (n.d.). <em>The IBM 650.</em> Retrieved June 30, 2026, from https://www.ibm.com/history/650</li>
+    <li>Bidnur, R. (2021, October 20). <em>Data Explosion and Data Storage Device Evolution.</em> Smartsoc. Retrieved June 30, 2026, from https://www.smartsocs.com/data-explosion-and-data-storage-device-evolution/</li>
+    <li><em>The IBM 029 Card Punch.</em> (2018, June 23). Retrieved June 30, 2026, from https://twobithistory.org/2018/06/23/ibm-029-card-punch.html</li>
+  </ul>
+</section>
