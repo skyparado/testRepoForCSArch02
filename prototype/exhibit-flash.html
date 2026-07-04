@@ -99,10 +99,12 @@
     .ssdsim-path-dot {
       position: absolute;
       top: -3px;
+      left: 0;
       width: 7px;
       height: 7px;
       border-radius: 50%;
       opacity: 0;
+      transition: left 0.3s ease;
     }
     .ssdsim-path-dot.on {
       opacity: 1;
@@ -216,6 +218,28 @@
       color: rgba(170,170,204,0.35);
       line-height: 1.5;
       margin: 0.9rem 0 0 0;
+    }
+
+    /* Fallback button styling, scoped by ID so it can never clash with
+       whatever css/style.css defines for .btn-primary/.btn-sm elsewhere
+       on the site — the Fire/Reset buttons should always be usable and
+       visible even if those utility classes aren't defined globally. */
+    #fireBtn, #simReset {
+      font-family: "Space Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: transparent;
+      border: 1px solid rgba(170,170,204,0.4);
+      color: #ccc;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #fireBtn:disabled { cursor: not-allowed; opacity: 0.5; }
+    #fireBtn:focus-visible, #simReset:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
     }
   </style>
 </head>
@@ -537,270 +561,322 @@
 
   <script src="js/main.js"></script>
   <script>
-    // Nav toggle (mobile menu) — mirrors the optical exhibit page
-    const navToggle = document.getElementById('navToggle');
-    const navLinks  = document.getElementById('navLinks');
-    if (navToggle && navLinks) {
-      navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+// exhibit-flash.js
+// Page logic for "The Flash" exhibit: TOC scroll-spy + SSD Speed Challenge.
+//
+// Everything lives inside ONE top-level IIFE. This is deliberate: if
+// js/main.js (loaded just before this file) already declares top-level
+// `const`/`let` bindings for nav/TOC handling — which it likely does, since
+// every exhibit page needs the same nav toggle + scroll-spy behavior — then
+// a second classic <script> re-declaring those same names at its own top
+// level throws `SyntaxError: Identifier '...' has already been declared'
+// and NOTHING in that script tag runs, including the whole simulator below.
+// Wrapping in a function gives every name here its own scope, so it can
+// never collide with globals from main.js.
+(function () {
+  'use strict';
+
+  /* ---------------------------------------------------------------
+   * Nav toggle + TOC scroll-spy
+   * (Safe to keep even if main.js already does this elsewhere — these
+   * just attach a second, independently-scoped listener to the same
+   * elements. If main.js already fully owns this behavior on other
+   * pages, feel free to delete this block; it's isolated here purely
+   * so this page doesn't depend on main.js implementing it.)
+   * --------------------------------------------------------------- */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  }
+
+  const sections = document.querySelectorAll('section[id]');
+  const tocLinks = document.querySelectorAll('#tocList a');
+
+  if (sections.length && tocLinks.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach((a) => {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+            });
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
+
+  /* ---------------------------------------------------------------
+   * SSD Speed Challenge
+   * --------------------------------------------------------------- */
+  const simRoot = document.getElementById('deviceList');
+  if (!simRoot) return; // simulator isn't on this page — nothing more to do
+
+  const ICONS = {
+    hdd: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>',
+    sata: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    nvme: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>',
+  };
+
+  const DEVICES = {
+    hdd: {
+      label: 'HDD', sub: '7,200 RPM', accent: '#FF0080',
+      concurrency: 1, stepMs: 480,
+      latency: '~6 ms', iops: '~150', throughput: '~150 MB/s',
+      barPct: { speed: 12, latency: 95, iops: 4 },
+      blurb: 'One request at a time — the arm has to physically seek before each read.',
+      legend: 'One request serviced at a time (physical seek).',
+    },
+    sata: {
+      label: 'SATA SSD', sub: 'AHCI · 1 queue × 32', accent: '#00FFFF',
+      concurrency: 6, stepMs: 140,
+      latency: '~100 µs', iops: '~50,000', throughput: '~550 MB/s',
+      barPct: { speed: 55, latency: 15, iops: 45 },
+      blurb: 'No seek time, but AHCI still caps the drive to a single command queue.',
+      legend: 'No seek time, but capped to one AHCI queue, 32 commands deep.',
+    },
+    nvme: {
+      label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', accent: '#39FF14',
+      concurrency: 16, stepMs: 70,
+      latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
+      barPct: { speed: 100, latency: 3, iops: 100 },
+      blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
+      legend: 'Talks directly over PCIe with up to 65,535 parallel queues.',
+    },
+  };
+  const ORDER = ['hdd', 'sata', 'nvme'];
+  const QUEUE_SIZE = 16;
+
+  let deviceKey = 'nvme';
+  let running = false;
+  let timers = [];
+  let queue = [];
+  let cycles = 0;
+
+  const el = {
+    path: document.getElementById('ssdsimPath'),
+    reset: document.getElementById('simReset'),
+    deviceList: document.getElementById('deviceList'),
+    pathLine: document.getElementById('pathLine'),
+    pathDot: document.getElementById('pathDot'),
+    devIconBox: document.getElementById('devIconBox'),
+    devIconLabel: document.getElementById('devIconLabel'),
+    queueLabel: document.getElementById('queueLabel'),
+    fireBtn: document.getElementById('fireBtn'),
+    queueGrid: document.getElementById('queueGrid'),
+    statsRow: document.getElementById('statsRow'),
+    blurb: document.getElementById('blurb'),
+    legendList: document.getElementById('legendList'),
+  };
+
+  function randomAddr() {
+    const n = Math.floor(Math.random() * 0xffff);
+    return '0x' + n.toString(16).padStart(4, '0').toUpperCase();
+  }
+
+  function makeQueue() {
+    const q = [];
+    for (let i = 0; i < QUEUE_SIZE; i++) {
+      q.push({ id: i, addr: randomAddr(), status: 'queued' });
+    }
+    return q;
+  }
+
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function renderDeviceList() {
+    el.deviceList.innerHTML = '';
+    ORDER.forEach((key) => {
+      const d = DEVICES[key];
+      const selected = key === deviceKey;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ssdsim-device-btn' + (selected ? ' active' : '');
+      btn.disabled = running;
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      btn.style.borderColor = selected ? d.accent : 'rgba(170,170,204,0.25)';
+      btn.style.color = selected ? d.accent : '#888';
+      btn.innerHTML = `<span>${ICONS[key]}</span><span class="dname">${d.label}</span><span class="dsub">${d.sub}</span>`;
+      btn.addEventListener('click', () => selectDevice(key));
+      el.deviceList.appendChild(btn);
+    });
+  }
+
+  function renderQueue() {
+    const d = DEVICES[deviceKey];
+    el.queueGrid.setAttribute(
+      'aria-label',
+      `${QUEUE_SIZE} pending read requests, ${
+        d.concurrency === 1 ? 'serviced one at a time' : `serviced ${d.concurrency} at a time`
+      }`
+    );
+    el.queueGrid.innerHTML = '';
+    queue.forEach((r) => {
+      const cell = document.createElement('div');
+      cell.className = 'ssdsim-queue-cell';
+      cell.title = r.addr;
+      if (r.status === 'done') {
+        cell.style.background = d.accent + '33';
+        cell.style.borderColor = d.accent;
+      } else if (r.status === 'active') {
+        cell.style.background = d.accent;
+        cell.style.borderColor = d.accent;
+        cell.style.color = '#000';
+        cell.textContent = '●';
+      } else {
+        cell.style.background = '';
+        cell.style.borderColor = '';
+        cell.style.color = '';
+      }
+      el.queueGrid.appendChild(cell);
+    });
+  }
+
+  function renderStats() {
+    const d = DEVICES[deviceKey];
+    const stats = [
+      { label: 'Access Speed', pct: d.barPct.speed, value: d.throughput },
+      { label: 'Latency', pct: d.barPct.latency, value: d.latency },
+      { label: 'IOPS', pct: d.barPct.iops, value: d.iops },
+    ];
+    el.statsRow.innerHTML = '';
+    stats.forEach((s) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'ssdsim-stat';
+      wrap.innerHTML = `
+        <div class="ssdsim-stat-track"><div class="ssdsim-stat-fill" style="height:${Math.max(s.pct, 4)}%; background:${d.accent};"></div></div>
+        <span class="ssdsim-stat-name">${s.label}</span>
+        <span class="ssdsim-stat-value" style="color:${d.accent};">${s.value}</span>
+      `;
+      el.statsRow.appendChild(wrap);
+    });
+  }
+
+  function renderLegend() {
+    el.legendList.innerHTML = '';
+    ORDER.forEach((key) => {
+      const d = DEVICES[key];
+      const item = document.createElement('div');
+      item.className = 'ssdsim-legend-item';
+      item.innerHTML = `
+        <span class="ssdsim-legend-swatch" style="background:${d.accent};"></span>
+        <span><span class="ssdsim-legend-name" style="color:${d.accent};">${d.label}</span> — ${d.legend}</span>
+      `;
+      el.legendList.appendChild(item);
+    });
+  }
+
+  function renderChrome() {
+    const d = DEVICES[deviceKey];
+
+    el.devIconBox.style.borderColor = d.accent;
+    el.devIconBox.style.color = d.accent;
+    el.devIconBox.innerHTML = ICONS[deviceKey];
+    el.devIconLabel.textContent = d.label;
+    el.devIconLabel.style.color = d.accent;
+
+    el.pathLine.style.background = d.accent + '44';
+    el.pathDot.style.background = d.accent;
+    el.pathDot.classList.toggle('on', running);
+    // BUG FIX: this dot never moved before — only its opacity pulsed in
+    // place. Now its position along the CPU↔device wire tracks progress,
+    // matching the reference component.
+    el.pathDot.style.left = ((cycles * 37) % 90) + '%';
+
+    el.queueLabel.textContent = `Read Queue — ${
+      d.concurrency === 1 ? 'sequential' : d.concurrency + '-wide parallel'
+    }`;
+
+    // BUG FIX: fireBtn/simReset previously relied on undefined "btn-primary"/
+    // "btn-sm" classes and never picked up the device's accent color, so
+    // they looked like plain, unstyled default buttons. Style them directly,
+    // consistent with every other accented element in the widget.
+    el.fireBtn.disabled = running;
+    el.fireBtn.textContent = running ? 'Running…' : 'Fire Queue';
+    el.fireBtn.style.borderColor = d.accent;
+    el.fireBtn.style.color = running ? '#666' : d.accent;
+
+    el.reset.style.borderColor = 'rgba(170,170,204,0.4)';
+
+    el.blurb.textContent = d.blurb;
+    el.path.classList.toggle('running', running);
+  }
+
+  function renderAll() {
+    renderDeviceList();
+    renderChrome();
+    renderQueue();
+    renderStats();
+    renderLegend();
+  }
+
+  function selectDevice(key) {
+    if (running) return;
+    deviceKey = key;
+    queue = makeQueue();
+    cycles = 0;
+    renderAll();
+  }
+
+  function reset() {
+    clearTimers();
+    running = false;
+    deviceKey = 'nvme';
+    queue = makeQueue();
+    cycles = 0;
+    renderAll();
+  }
+
+  function runQueue() {
+    if (running) return;
+    clearTimers();
+    queue = makeQueue();
+    running = true;
+    cycles = 0;
+    renderAll();
+
+    const d = DEVICES[deviceKey];
+    let pending = queue.map((r) => r.id);
+
+    function runBatch() {
+      if (pending.length === 0) {
+        running = false;
+        renderChrome();
+        return;
+      }
+      const batch = pending.slice(0, d.concurrency);
+      pending = pending.slice(d.concurrency);
+      cycles += 1;
+
+      queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r));
+      renderQueue();
+      el.pathDot.style.left = ((cycles * 37) % 90) + '%';
+
+      const t1 = setTimeout(() => {
+        queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'done' } : r));
+        renderQueue();
+        const t2 = setTimeout(runBatch, 90);
+        timers.push(t2);
+      }, d.stepMs);
+      timers.push(t1);
     }
 
-    // Lights up the TOC link that matches whichever section is on screen
-    const sections = document.querySelectorAll('section[id]');
-    const tocLinks  = document.querySelectorAll('#tocList a');
+    runBatch();
+  }
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          tocLinks.forEach(a => {
-            a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
-          });
-        }
-      });
-    }, { rootMargin: '-20% 0px -70% 0px' });
+  el.reset.addEventListener('click', reset);
+  el.fireBtn.addEventListener('click', runQueue);
 
-    sections.forEach(s => observer.observe(s));
+  queue = makeQueue();
+  renderAll();
+})();
 
-    // ---- SSD Speed Challenge ----
-    (function () {
-      const ICONS = {
-        hdd: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>',
-        sata: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-        nvme: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>'
-      };
-
-      // DEVICES now includes `legend`, mirroring the JSX version, so the
-      // legend block below is generated from data instead of being static markup.
-      const DEVICES = {
-        hdd: {
-          label: 'HDD', sub: '7,200 RPM', accent: '#FF0080',
-          concurrency: 1, stepMs: 480,
-          latency: '~6 ms', iops: '~150', throughput: '~150 MB/s',
-          barPct: { speed: 12, latency: 95, iops: 4 },
-          blurb: 'One request at a time — the arm has to physically seek before each read.',
-          legend: 'One request serviced at a time (physical seek).',
-        },
-        sata: {
-          label: 'SATA SSD', sub: 'AHCI · 1 queue × 32', accent: '#00FFFF',
-          concurrency: 6, stepMs: 140,
-          latency: '~100 µs', iops: '~50,000', throughput: '~550 MB/s',
-          barPct: { speed: 55, latency: 15, iops: 45 },
-          blurb: 'No seek time, but AHCI still caps the drive to a single command queue.',
-          legend: 'No seek time, but capped to one AHCI queue, 32 commands deep.',
-        },
-        nvme: {
-          label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', accent: '#39FF14',
-          concurrency: 16, stepMs: 70,
-          latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
-          barPct: { speed: 100, latency: 3, iops: 100 },
-          blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
-          legend: 'Talks directly over PCIe with up to 65,535 parallel queues.',
-        },
-      };
-      const ORDER = ['hdd', 'sata', 'nvme'];
-      const QUEUE_SIZE = 16;
-
-      let deviceKey = 'nvme';
-      let running = false;
-      let timers = [];
-      let queue = [];
-      let cycles = 0;
-
-      const el = {
-        path: document.getElementById('ssdsimPath'),
-        reset: document.getElementById('simReset'),
-        deviceList: document.getElementById('deviceList'),
-        pathLine: document.getElementById('pathLine'),
-        pathDot: document.getElementById('pathDot'),
-        devIconBox: document.getElementById('devIconBox'),
-        devIconLabel: document.getElementById('devIconLabel'),
-        queueLabel: document.getElementById('queueLabel'),
-        fireBtn: document.getElementById('fireBtn'),
-        queueGrid: document.getElementById('queueGrid'),
-        statsRow: document.getElementById('statsRow'),
-        blurb: document.getElementById('blurb'),
-        legendList: document.getElementById('legendList'),
-      };
-
-      // Each request now carries a random hex address, matching the JSX
-      // version, shown as a tooltip on hover.
-      function randomAddr() {
-        const n = Math.floor(Math.random() * 0xffff);
-        return '0x' + n.toString(16).padStart(4, '0').toUpperCase();
-      }
-
-      function makeQueue() {
-        const q = [];
-        for (let i = 0; i < QUEUE_SIZE; i++) {
-          q.push({ id: i, addr: randomAddr(), status: 'queued' });
-        }
-        return q;
-      }
-
-      function clearTimers() {
-        timers.forEach(clearTimeout);
-        timers = [];
-      }
-
-      function renderDeviceList() {
-        el.deviceList.innerHTML = '';
-        ORDER.forEach(key => {
-          const d = DEVICES[key];
-          const selected = key === deviceKey;
-          const btn = document.createElement('button');
-          btn.className = 'ssdsim-device-btn' + (selected ? ' active' : '');
-          btn.disabled = running;
-          btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
-          btn.style.borderColor = selected ? d.accent : 'rgba(170,170,204,0.25)';
-          btn.style.color = selected ? d.accent : '#888';
-          btn.innerHTML = `<span>${ICONS[key]}</span><span class="dname">${d.label}</span><span class="dsub">${d.sub}</span>`;
-          btn.addEventListener('click', () => selectDevice(key));
-          el.deviceList.appendChild(btn);
-        });
-      }
-
-      function renderQueue() {
-        const d = DEVICES[deviceKey];
-        el.queueGrid.setAttribute(
-          'aria-label',
-          `${QUEUE_SIZE} pending read requests, ${d.concurrency === 1 ? 'serviced one at a time' : `serviced ${d.concurrency} at a time`}`
-        );
-        el.queueGrid.innerHTML = '';
-        queue.forEach(r => {
-          const cell = document.createElement('div');
-          cell.className = 'ssdsim-queue-cell';
-          cell.title = r.addr;
-          if (r.status === 'done') {
-            cell.style.background = d.accent + '33';
-            cell.style.borderColor = d.accent;
-          } else if (r.status === 'active') {
-            cell.style.background = d.accent;
-            cell.style.borderColor = d.accent;
-            cell.style.color = '#000';
-            cell.textContent = '●';
-          }
-          el.queueGrid.appendChild(cell);
-        });
-      }
-
-      function renderStats() {
-        const d = DEVICES[deviceKey];
-        const stats = [
-          { label: 'Access Speed', pct: d.barPct.speed, value: d.throughput },
-          { label: 'Latency', pct: d.barPct.latency, value: d.latency },
-          { label: 'IOPS', pct: d.barPct.iops, value: d.iops },
-        ];
-        el.statsRow.innerHTML = '';
-        stats.forEach(s => {
-          const wrap = document.createElement('div');
-          wrap.className = 'ssdsim-stat';
-          wrap.innerHTML = `
-            <div class="ssdsim-stat-track"><div class="ssdsim-stat-fill" style="height:${Math.max(s.pct, 4)}%; background:${d.accent};"></div></div>
-            <span class="ssdsim-stat-name">${s.label}</span>
-            <span class="ssdsim-stat-value" style="color:${d.accent};">${s.value}</span>
-          `;
-          el.statsRow.appendChild(wrap);
-        });
-      }
-
-      // Legend now generated from DEVICES[key].legend, same source of truth
-      // as the blurb and stats — no more hand-duplicated markup.
-      function renderLegend() {
-        el.legendList.innerHTML = '';
-        ORDER.forEach(key => {
-          const d = DEVICES[key];
-          const item = document.createElement('div');
-          item.className = 'ssdsim-legend-item';
-          item.innerHTML = `
-            <span class="ssdsim-legend-swatch" style="background:${d.accent};"></span>
-            <span><span class="ssdsim-legend-name" style="color:${d.accent};">${d.label}</span> — ${d.legend}</span>
-          `;
-          el.legendList.appendChild(item);
-        });
-      }
-
-      function renderChrome() {
-        const d = DEVICES[deviceKey];
-        el.devIconBox.style.borderColor = d.accent;
-        el.devIconBox.style.color = d.accent;
-        el.devIconBox.innerHTML = ICONS[deviceKey];
-        el.devIconLabel.textContent = d.label;
-        el.devIconLabel.style.color = d.accent;
-        el.pathLine.style.background = d.accent + '44';
-        el.pathDot.style.background = d.accent;
-        el.pathDot.classList.toggle('on', running);
-        el.queueLabel.textContent = `Read Queue — ${d.concurrency === 1 ? 'sequential' : d.concurrency + '-wide parallel'}`;
-        el.fireBtn.disabled = running;
-        el.fireBtn.textContent = running ? 'Running…' : 'Fire Queue';
-        el.blurb.textContent = d.blurb;
-        el.path.classList.toggle('running', running);
-      }
-
-      function renderAll() {
-        renderDeviceList();
-        renderChrome();
-        renderQueue();
-        renderStats();
-        renderLegend();
-      }
-
-      function selectDevice(key) {
-        if (running) return;
-        deviceKey = key;
-        queue = makeQueue();
-        cycles = 0;
-        renderAll();
-      }
-
-      function reset() {
-        clearTimers();
-        running = false;
-        deviceKey = 'nvme';
-        queue = makeQueue();
-        cycles = 0;
-        renderAll();
-      }
-
-      function runQueue() {
-        clearTimers();
-        queue = makeQueue();
-        running = true;
-        cycles = 0;
-        renderAll();
-
-        const d = DEVICES[deviceKey];
-        let pending = queue.map(r => r.id);
-
-        function runBatch() {
-          if (pending.length === 0) {
-            running = false;
-            renderChrome();
-            return;
-          }
-          const batch = pending.slice(0, d.concurrency);
-          pending = pending.slice(d.concurrency);
-          cycles += 1;
-
-          queue = queue.map(r => batch.includes(r.id) ? { ...r, status: 'active' } : r);
-          renderQueue();
-
-          const t1 = setTimeout(() => {
-            queue = queue.map(r => batch.includes(r.id) ? { ...r, status: 'done' } : r);
-            renderQueue();
-            const t2 = setTimeout(runBatch, 90);
-            timers.push(t2);
-          }, d.stepMs);
-          timers.push(t1);
-        }
-
-        runBatch();
-      }
-
-      el.reset.addEventListener('click', reset);
-      el.fireBtn.addEventListener('click', runQueue);
-
-      queue = makeQueue();
-      renderAll();
-    })();
   </script>
 </body>
 </html>
